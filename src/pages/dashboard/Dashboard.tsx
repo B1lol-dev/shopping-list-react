@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth.store";
 import { Copy, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useCopyToClipboard } from "react-use";
 
 const Dashboard = () => {
-  const { token } = useAuthStore();
+  const { token, removeToken } = useAuthStore();
   const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [, copyToClipboard] = useCopyToClipboard();
 
   useEffect(() => {
     if (!token) {
@@ -28,10 +31,24 @@ const Dashboard = () => {
         },
       })
       .then((res) => setUser(res.data))
+      .catch((err) => {
+        if (err?.response?.data?.message === "Unauthorized") {
+          removeToken();
+        }
+      })
       .finally(() => setLoading(false));
   }, [token, navigate]);
 
   console.log(user);
+
+  const handleCopyUsername = () => {
+    copyToClipboard(user?.username);
+    toast.success(`${user?.username} copied to clipboard`);
+  };
+
+  const handleDeleteAccount = () => {
+    toast.success("Account deleted successfully");
+  };
 
   if (loading) {
     return <section>Loading...</section>;
@@ -62,10 +79,10 @@ const Dashboard = () => {
             <h1 className="capitalize text-2xl">{user?.name}</h1>
             <h2 className="text-xl">@{user?.username}</h2>
             <div className="flex flex-col gap-2 mt-2">
-              <Button>
+              <Button onClick={handleCopyUsername}>
                 <Copy /> Copy username
               </Button>
-              <Button variant="destructive">
+              <Button variant="destructive" onClick={handleDeleteAccount}>
                 <Trash /> Delete account
               </Button>
             </div>

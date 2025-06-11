@@ -85,7 +85,7 @@ const SearchComponent = ({ data, onChange }: SearchComponentProps) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center space-y-4 fixed left-1/2 top-1/2 -translate-1/2">
+    <div className="w-full flex flex-col items-center justify-center space-y-4 fixed left-1/2 top-1/2 -translate-1/2 bg-white">
       {/* Search Input and Sort Dropdown */}
       <div className="w-full md:w-[40%] max-w-lg flex flex-col sm:flex-row gap-4">
         {/* Search Bar with Icon */}

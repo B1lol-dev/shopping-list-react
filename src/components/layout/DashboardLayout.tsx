@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { TruncatingNavbar as Navbar } from "../ui/truncating-navbar";
 import {
   Sidebar,
@@ -54,6 +54,11 @@ const DashboardLayout = () => {
   const [isSearchShow, setIsSearchShow] = useState<boolean>(false);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  if (!token) {
+    navigate("/login");
+  }
 
   useEffect(() => {
     baseApi
