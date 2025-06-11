@@ -104,7 +104,6 @@ export const TruncatingNavbar: React.FC<TruncatingNavbarProps> = ({
       })
       .then((res) => setUser(res.data));
   }, [token]);
-  console.log(user);
 
   const handleResize = useCallback(() => {
     setIsMobile(window.innerWidth < desktopThreshold);

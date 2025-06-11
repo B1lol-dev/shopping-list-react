@@ -160,7 +160,7 @@ const DashboardLayout = () => {
                 {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   groups.map((group: any) => (
-                    <Link to={"/dashboard/group/" + group._id}>
+                    <Link to={"/dashboard/group/" + group._id} key={group._id}>
                       <Button
                         variant="outline"
                         className="w-full cursor-pointer"

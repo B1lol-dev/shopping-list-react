@@ -7,6 +7,7 @@ import DashboardLayout from "./components/layout/DashboardLayout";
 const Login = lazy(() => import("./pages/auth/Login"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard"));
+const Group = lazy(() => import("./pages/group/Group"));
 const NotFound = lazy(() => import("./pages/not-found/NotFound"));
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/" element={<DashboardLayout />}>
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/group/:id" element={<Group />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
