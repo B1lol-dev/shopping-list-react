@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { SignupForm } from "./components/SignupForm";
 import { useAuthStore } from "@/store/auth.store";
 import { useNavigate } from "react-router-dom";
@@ -20,9 +20,9 @@ const Signup = () => {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <GalleryVerticalEnd className="size-4" />
+              <ShoppingCart className="size-4" />
             </div>
-            Gadoy Inc.
+            Shopping list
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
@@ -33,7 +33,7 @@ const Signup = () => {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <img
-          src="https://i1.sndcdn.com/artworks-YDQOy2Pru5CA2rhs-x1uzgA-t500x500.jpg"
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIi1TbJudxdUQwD97wW9yRrVQA1z7HxqYbiA&s"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />

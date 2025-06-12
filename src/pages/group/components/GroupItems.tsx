@@ -62,8 +62,6 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
       });
   }, [token]);
 
-  console.log(user);
-
   const handleAddNewItem = (e: FormEvent) => {
     e.preventDefault();
 
@@ -92,7 +90,6 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
       })
       .catch((err) => toast.error(err.message));
   };
-  console.log(items);
 
   const handleDeleteItem = (id: string) => {
     baseApi

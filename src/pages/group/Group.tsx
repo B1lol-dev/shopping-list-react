@@ -7,12 +7,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAuthStore } from "@/store/auth.store";
-import { DoorOpen, MoreHorizontal, UserPlus2 } from "lucide-react";
+import { DoorOpen, MoreHorizontal, Trash, UserPlus2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import GroupItems from "./components/GroupItems";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import GroupUsers from "./components/GroupUsers";
 
 const Group = () => {
   const { id } = useParams();
@@ -22,9 +23,22 @@ const Group = () => {
   const [loading, setLoading] = useState<boolean>(true);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [items, setItems] = useState<any>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [users, setUsers] = useState<any>([]);
+  const [user, setUser] = useState<{ _id: string }>();
 
   useEffect(() => {
     setLoading(true);
+
+    baseApi
+      .get("/auth", {
+        headers: {
+          "X-Auth-Token": token,
+        },
+      })
+      .then((res) => setUser(res.data))
+      .catch((err) => console.error(err));
+
     baseApi
       .get("/groups", {
         headers: {
@@ -38,10 +52,13 @@ const Group = () => {
         setItems(
           res.data.filter((group: { _id: string }) => group._id === id)[0].items
         );
+        setUsers(
+          res.data.filter((group: { _id: string }) => group._id === id)[0]
+            .members
+        );
       })
       .finally(() => setLoading(false));
   }, [token, id]);
-  console.log(group);
 
   if (loading) {
     return <section>Loading...</section>;
@@ -68,9 +85,15 @@ const Group = () => {
                   <UserPlus2 />
                   Add User
                 </Button>
-                <Button className="w-full" variant="destructive">
-                  <DoorOpen /> Leave group
-                </Button>
+                {group?.owner?._id !== user?._id ? (
+                  <Button className="w-full" variant="destructive">
+                    <DoorOpen /> Leave group
+                  </Button>
+                ) : (
+                  <Button className="w-full" variant="destructive">
+                    <Trash /> Delete group
+                  </Button>
+                )}
               </PopoverContent>
             </Popover>
           </div>
@@ -89,7 +112,9 @@ const Group = () => {
               setItems={setItems}
             />
           </TabsContent>
-          <TabsContent value="users">Users</TabsContent>
+          <TabsContent value="users">
+            <GroupUsers users={users} setUsers={setUsers} group={group} />
+          </TabsContent>
         </Tabs>
       </Container>
     </section>
