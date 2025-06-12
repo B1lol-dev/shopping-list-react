@@ -67,6 +67,11 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
   const handleAddNewItem = (e: FormEvent) => {
     e.preventDefault();
 
+    if (!newItem) {
+      toast.error("New item must be at least 1 character long!");
+      return;
+    }
+
     baseApi
       .post(
         "/items",
@@ -83,6 +88,7 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
       .then((res) => {
         toast.success(res.data.message);
         setItems((p) => [...p, res.data.item]);
+        setNewItem("");
       })
       .catch((err) => toast.error(err.message));
   };
@@ -103,6 +109,44 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
       .catch((err) => {
         toast.error("Something went wrong");
         console.error(err);
+      });
+  };
+
+  const handleMarkAsBought = (id: string) => {
+    baseApi
+      .post(
+        `/items/${id}/mark-as-bought`,
+        {},
+        {
+          headers: {
+            "X-Auth-Token": token,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res);
+        toast.success("Marked as bought");
+      })
+      .catch((err) => {
+        toast.error("Something went wrong");
+        console.log(err);
+      });
+  };
+
+  const handleUnmarkAsBought = (id: string) => {
+    baseApi
+      .delete(`/items/${id}/mark-as-bought`, {
+        headers: {
+          "X-Auth-Token": token,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        toast.success("Unmarked as bought");
+      })
+      .catch((err) => {
+        toast.error("Something went wrong");
+        console.log(err);
       });
   };
 
@@ -141,22 +185,34 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
               <TableCell>
                 <div className="flex items-center gap-4">
                   {item.isBought ? (
-                    <>Bought by {item?.boughtBy?.username}</>
+                    <>
+                      <Badge>Bought by {item?.boughtBy?.username}</Badge>{" "}
+                      {item?.owner?._id === user?._id && (
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleUnmarkAsBought(item._id)}
+                        >
+                          <ShoppingCart />
+                        </Button>
+                      )}
+                    </>
                   ) : (
                     <>
-                      Not Bought{" "}
-                      <Button onClick={() => {}}>
+                      <Badge variant="outline">Not Bought</Badge>{" "}
+                      <Button onClick={() => handleMarkAsBought(item._id)}>
                         <ShoppingCart />
                       </Button>
                     </>
                   )}
                   {item.owner?._id === user?._id && (
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDeleteItem(item._id)}
-                    >
-                      <X />
-                    </Button>
+                    <>
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDeleteItem(item._id)}
+                      >
+                        <X />
+                      </Button>
+                    </>
                   )}
                 </div>
               </TableCell>
