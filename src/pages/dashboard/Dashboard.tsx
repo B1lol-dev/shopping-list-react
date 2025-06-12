@@ -37,7 +37,7 @@ const Dashboard = () => {
         }
       })
       .finally(() => setLoading(false));
-  }, [token, navigate]);
+  }, [token, navigate, removeToken]);
 
   console.log(user);
 
