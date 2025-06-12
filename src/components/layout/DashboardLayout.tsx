@@ -70,10 +70,15 @@ const DashboardLayout = () => {
       .then((res) => setGroups(res.data))
       .catch((err) => toast.error(err.message))
       .finally(() => setLoading(false));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        setIsSearchShow(false);
+      }
+    });
   }, [token]);
 
   const handleSearch = (searchQ: string) => {
-    console.log(searchQ);
     baseApi
       .get(`/groups/search?q=${searchQ}`, {
         headers: {
@@ -112,7 +117,7 @@ const DashboardLayout = () => {
           mobileBg="var(--truncating-navbar-bg-mobile)"
           outlineColor="var(--truncating-navbar-outline)"
           searchPlaceholderText="Search..."
-          shortcutKey="M"
+          shortcutKey="K"
           onOpenSearch={() => setIsSearchShow((p) => !p)}
           zIndex={1}
           defaultTextColor="var(--truncating-navbar-text)"
