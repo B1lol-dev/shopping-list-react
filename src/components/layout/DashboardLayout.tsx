@@ -107,38 +107,6 @@ const DashboardLayout = () => {
 
   return (
     <div>
-      <Container>
-        <Navbar
-          icon="https://raw.githubusercontent.com/Northstrix/namer-ui/refs/heads/main/public/logo.png"
-          appName="Shopping List"
-          routes={routes}
-          homeRoute="https://namer-ui.netlify.app/"
-          scrolledBg="var(--truncating-navbar-bg-scrolled)"
-          mobileBg="var(--truncating-navbar-bg-mobile)"
-          outlineColor="var(--truncating-navbar-outline)"
-          searchPlaceholderText="Search..."
-          shortcutKey="K"
-          onOpenSearch={() => setIsSearchShow((p) => !p)}
-          zIndex={1}
-          defaultTextColor="var(--truncating-navbar-text)"
-          hoverTextColor="var(--truncating-navbar-text-hover)"
-          hoverBgColor="var(--truncating-navbar-bg-hover)"
-          searchBtnBg="var(--truncating-navbar-search-bg)"
-          searchBtnText="var(--truncating-navbar-search-text)"
-          searchBtnOutline="var(--truncating-navbar-search-outline)"
-          searchBtnHoverBg="var(--truncating-navbar-search-bg-hover)"
-          searchBtnHoverText="var(--truncating-navbar-search-text-hover)"
-          mobileMenuBg="var(--truncating-navbar-bg-mobile-menu)"
-          mobileMenuText="var(--truncating-navbar-mobile-menu-text)"
-          mobileMenuHoverBg="var(--truncating-navbar-mobile-menu-bg-hover)"
-          mobileMenuHoverText="var(--truncating-navbar-mobile-menu-text-hover)"
-          logoTextColor="var(--truncating-navbar-logo-text)"
-          logoHoverColor="var(--truncating-navbar-logo-text-hover)"
-        />
-        {isSearchShow && (
-          <SearchComponent data={data} onChange={handleSearch} />
-        )}
-      </Container>
       <SidebarProvider>
         <Sidebar className="px-3">
           <SidebarHeader className="flex">
@@ -185,12 +153,44 @@ const DashboardLayout = () => {
           </SidebarContent>
           <SidebarFooter />
         </Sidebar>
-        <main className="w-full">
+        <div className="flex w-full flex-col">
           <Container>
+            <Navbar
+              icon="https://raw.githubusercontent.com/Northstrix/namer-ui/refs/heads/main/public/logo.png"
+              appName="Shopping List"
+              routes={routes}
+              homeRoute="https://namer-ui.netlify.app/"
+              scrolledBg="var(--truncating-navbar-bg-scrolled)"
+              mobileBg="var(--truncating-navbar-bg-mobile)"
+              outlineColor="var(--truncating-navbar-outline)"
+              searchPlaceholderText="Search..."
+              shortcutKey="K"
+              onOpenSearch={() => setIsSearchShow((p) => !p)}
+              zIndex={1}
+              defaultTextColor="var(--truncating-navbar-text)"
+              hoverTextColor="var(--truncating-navbar-text-hover)"
+              hoverBgColor="var(--truncating-navbar-bg-hover)"
+              searchBtnBg="var(--truncating-navbar-search-bg)"
+              searchBtnText="var(--truncating-navbar-search-text)"
+              searchBtnOutline="var(--truncating-navbar-search-outline)"
+              searchBtnHoverBg="var(--truncating-navbar-search-bg-hover)"
+              searchBtnHoverText="var(--truncating-navbar-search-text-hover)"
+              mobileMenuBg="var(--truncating-navbar-bg-mobile-menu)"
+              mobileMenuText="var(--truncating-navbar-mobile-menu-text)"
+              mobileMenuHoverBg="var(--truncating-navbar-mobile-menu-bg-hover)"
+              mobileMenuHoverText="var(--truncating-navbar-mobile-menu-text-hover)"
+              logoTextColor="var(--truncating-navbar-logo-text)"
+              logoHoverColor="var(--truncating-navbar-logo-text-hover)"
+            />
+            {isSearchShow && (
+              <SearchComponent data={data} onChange={handleSearch} />
+            )}
             <SidebarTrigger />
-            <Outlet />
           </Container>
-        </main>
+          <main className="w-full">
+            <Outlet />
+          </main>
+        </div>
       </SidebarProvider>
     </div>
   );
