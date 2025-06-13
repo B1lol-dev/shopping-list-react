@@ -1,10 +1,23 @@
-// import { create } from "zustand";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-// interface IThemeStore {
-//   theme: "dark" | "light";
-// }
+export type TThemes = "dark" | "light";
+interface IThemeStore {
+  theme: TThemes;
+  setTheme: (theme: TThemes) => void;
+}
 
-// export const useThemeStore = create<IThemeStore>()((set, get) => ({
-//   theme: "light",
-//   setTheme: "dark"
-// }));
+export const useThemeStore = create<IThemeStore>()(
+  persist(
+    (set) => ({
+      theme: "light",
+      setTheme: (theme: TThemes) =>
+        set({
+          theme,
+        }),
+    }),
+    {
+      name: "theme-store",
+    }
+  )
+);

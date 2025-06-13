@@ -4,6 +4,9 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarProvider,
   SidebarTrigger,
@@ -14,7 +17,14 @@ import { useEffect, useState } from "react";
 import { baseApi } from "@/api/api";
 import { useAuthStore } from "@/store/auth.store";
 import { Button } from "../ui/button";
-import { AlertCircle, ChevronsUpDown, Group, Plus, User } from "lucide-react";
+import {
+  AlertCircle,
+  ChevronsUpDown,
+  Group,
+  Plus,
+  Settings,
+  User,
+} from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -28,6 +38,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertTitle } from "../ui/alert";
 import { Spinner } from "../ui/spinner";
+import { useThemeStore, type TThemes } from "@/store/theme.store";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+} from "../ui/select";
 
 // const routes = [
 //   {
@@ -82,6 +100,7 @@ const DashboardLayout = () => {
   );
   const [refetchCount, setRefetchCount] = useState<number>(0);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const { theme, setTheme } = useThemeStore();
 
   if (!token) {
     navigate("/login");
@@ -268,6 +287,25 @@ const DashboardLayout = () => {
                 }
               </CollapsibleContent>
             </Collapsible>
+            <SidebarGroup className="mt-auto">
+              <SidebarGroupLabel>
+                <Settings /> Settings
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <Select
+                  defaultValue={theme}
+                  onValueChange={(val: TThemes) => setTheme(val)}
+                >
+                  <SelectTrigger className="w-full">{theme}</SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="light">light</SelectItem>
+                      <SelectItem value="dark">dark</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </SidebarGroupContent>
+            </SidebarGroup>
           </SidebarContent>
           <SidebarFooter />
         </Sidebar>
