@@ -13,7 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import GroupItems from "./components/GroupItems";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import GroupUsers from "./components/GroupUsers";
+import GroupUsers, { type IUser } from "./components/GroupUsers";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
+import { Input } from "@/components/ui/input";
 
 const Group = () => {
   const { id } = useParams();
@@ -39,6 +40,7 @@ const Group = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [users, setUsers] = useState<any>([]);
   const [user, setUser] = useState<{ _id: string }>();
+  const [fetchCount, setFetchCount] = useState<number>(0);
 
   useEffect(() => {
     setLoading(true);
@@ -71,7 +73,7 @@ const Group = () => {
         );
       })
       .finally(() => setLoading(false));
-  }, [token, id]);
+  }, [token, id, fetchCount]);
 
   const handleDeleteGroup = () => {
     baseApi
@@ -84,6 +86,46 @@ const Group = () => {
         toast.success(res.data.message);
         navigate("/dashboard");
         location.reload();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Something went wrong");
+      });
+  };
+
+  const [addingUsersList, setAddingUsersList] = useState<IUser[]>([]);
+  const handleShowAddingUsersList = (searchingUser: string) => {
+    baseApi
+      .get(`/users/search?q=${searchingUser}`, {
+        headers: {
+          "X-Auth-Token": token,
+        },
+      })
+      .then((res) => {
+        setAddingUsersList(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Something went wrong");
+      });
+  };
+
+  const handleAddUserToGroup = (memberId: string) => {
+    baseApi
+      .post(
+        `/groups/${id}/members`,
+        {
+          memberId,
+        },
+        {
+          headers: {
+            "X-Auth-Token": token,
+          },
+        }
+      )
+      .then((res) => {
+        toast.success(res.data.message);
+        setFetchCount((p) => p + 1);
       })
       .catch((err) => {
         console.error(err);
@@ -112,10 +154,44 @@ const Group = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="flex flex-col gap-3 items-center max-w-[150px]">
-                <Button className="w-full">
-                  <UserPlus2 />
-                  Add User
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Button className="w-full">
+                      <UserPlus2 />
+                      Add User
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Add user</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <Input
+                        placeholder="User's name"
+                        min={1}
+                        onChange={(e) =>
+                          handleShowAddingUsersList(e.target.value)
+                        }
+                      />
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    </AlertDialogFooter>
+                    <div className="max-h-40 overflow-auto">
+                      {addingUsersList?.map((user) => (
+                        <div
+                          key={user._id}
+                          className="flex items-center justify-between py-1 transition-all rounded-sm hover:bg-gray-200"
+                        >
+                          <h1 className="text-xl">{user.name}</h1>
+                          <AlertDialogAction
+                            onClick={() => handleAddUserToGroup(user._id)}
+                          >
+                            Add
+                          </AlertDialogAction>
+                        </div>
+                      ))}
+                    </div>
+                  </AlertDialogContent>
+                </AlertDialog>
                 {group?.owner?._id !== user?._id ? (
                   <Button className="w-full" variant="destructive">
                     <DoorOpen /> Leave group

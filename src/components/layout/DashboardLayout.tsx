@@ -139,7 +139,7 @@ const DashboardLayout = () => {
       )
       .then((res) => {
         toast.success(res.data.message);
-        navigate(`/dashboard/groups/${res.data.group._id}`);
+        navigate(`/dashboard/group/${res.data.group._id}`);
       })
       .catch((err) => {
         console.log(err);

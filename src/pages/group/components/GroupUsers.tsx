@@ -20,7 +20,7 @@ import {
 } from "react";
 import { toast } from "react-hot-toast";
 
-interface IUser {
+export interface IUser {
   _id: string;
   name: string;
   username: string;
