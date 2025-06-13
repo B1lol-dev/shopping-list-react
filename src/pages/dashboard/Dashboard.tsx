@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dots_v3 } from "@/components/ui/spinner";
 import { useAuthStore } from "@/store/auth.store";
 import { Copy, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -73,7 +74,15 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <section>Loading...</section>;
+    return (
+      <section>
+        <Container className="flex w-full h-screen items-center justify-center">
+          <div className="scale-300">
+            <Dots_v3 />
+          </div>
+        </Container>
+      </section>
+    );
   }
 
   return (

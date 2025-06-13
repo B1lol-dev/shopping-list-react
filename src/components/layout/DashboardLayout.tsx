@@ -27,6 +27,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertTitle } from "../ui/alert";
+import { Spinner } from "../ui/spinner";
 
 // const routes = [
 //   {
@@ -154,7 +155,13 @@ const DashboardLayout = () => {
   };
 
   if (loading) {
-    return <>loading...</>;
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="scale-300">
+          <Spinner />
+        </div>
+      </div>
+    );
   }
 
   return (

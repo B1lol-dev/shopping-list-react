@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
+import { Dots_v3 } from "@/components/ui/spinner";
 
 const Group = () => {
   const { id } = useParams();
@@ -162,7 +163,15 @@ const Group = () => {
   };
 
   if (loading) {
-    return <section>Loading...</section>;
+    return (
+      <section>
+        <Container className="flex items-center justify-center h-screen w-full">
+          <div className="scale-300">
+            <Dots_v3 />
+          </div>
+        </Container>
+      </section>
+    );
   }
 
   return (
