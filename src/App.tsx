@@ -19,7 +19,6 @@ const App = () => {
     html?.classList.add(theme);
 
     return () => {
-      html?.classList.remove("dark");
       html?.classList.remove(theme);
     };
   }, [theme]);
