@@ -1,5 +1,16 @@
 import { baseApi } from "@/api/api";
 import Container from "@/components/helpers/Container";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,7 +58,17 @@ const Dashboard = () => {
   };
 
   const handleDeleteAccount = () => {
-    toast.success("Account deleted successfully");
+    baseApi
+      .delete(`/users/${user?._id}`)
+      .then((res) => {
+        console.log(res.data);
+        toast.success("Account deleted successfully");
+        removeToken();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Something went wrong");
+      });
   };
 
   if (loading) {
@@ -82,9 +103,30 @@ const Dashboard = () => {
               <Button onClick={handleCopyUsername}>
                 <Copy /> Copy username
               </Button>
-              <Button variant="destructive" onClick={handleDeleteAccount}>
-                <Trash /> Delete account
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger>
+                  <Button variant="destructive">
+                    <Trash /> Delete account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteAccount}>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </div>
