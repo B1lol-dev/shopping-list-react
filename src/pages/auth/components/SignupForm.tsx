@@ -74,7 +74,7 @@ export function SignupForm({
           <Input
             id="name"
             type="text"
-            placeholder="Gadoy"
+            placeholder="John"
             {...register("name")}
           />
         </div>
@@ -89,7 +89,7 @@ export function SignupForm({
           <Input
             id="username"
             type="text"
-            placeholder="gadoy123"
+            placeholder="john28"
             {...register("username")}
           />
         </div>
