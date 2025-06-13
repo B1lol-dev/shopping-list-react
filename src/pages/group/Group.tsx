@@ -61,19 +61,25 @@ const Group = () => {
         },
       })
       .then((res) => {
+        if (!res.data.length) {
+          navigate("/dashboard");
+        }
         setGroup(
-          res.data.filter((group: { _id: string }) => group._id === id)[0]
+          res.data?.filter((group: { _id: string }) => group._id === id)[0]
         );
         setItems(
           res.data.filter((group: { _id: string }) => group._id === id)[0].items
         );
         setUsers(
-          res.data.filter((group: { _id: string }) => group._id === id)[0]
+          res.data?.filter((group: { _id: string }) => group._id === id)[0]
             .members
         );
       })
+      .catch((err) => {
+        console.error(err);
+      })
       .finally(() => setLoading(false));
-  }, [token, id, fetchCount]);
+  }, [token, id, fetchCount, navigate]);
 
   const handleDeleteGroup = () => {
     baseApi
@@ -86,6 +92,28 @@ const Group = () => {
         toast.success(res.data.message);
         navigate("/dashboard");
         location.reload();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Something went wrong");
+      });
+  };
+
+  const handleLeaveGroup = () => {
+    baseApi
+      .post(
+        `/groups/${id}/leave`,
+        {},
+        {
+          headers: {
+            "X-Auth-Token": token,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        toast.success(res.data.message);
+        navigate("/dashboard");
       })
       .catch((err) => {
         console.error(err);
@@ -193,7 +221,11 @@ const Group = () => {
                   </AlertDialogContent>
                 </AlertDialog>
                 {group?.owner?._id !== user?._id ? (
-                  <Button className="w-full" variant="destructive">
+                  <Button
+                    className="w-full"
+                    variant="destructive"
+                    onClick={handleLeaveGroup}
+                  >
                     <DoorOpen /> Leave group
                   </Button>
                 ) : (
