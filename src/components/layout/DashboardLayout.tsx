@@ -14,13 +14,19 @@ import { useEffect, useState } from "react";
 import { baseApi } from "@/api/api";
 import { useAuthStore } from "@/store/auth.store";
 import { Button } from "../ui/button";
-import { ChevronsUpDown, Group, Plus, User } from "lucide-react";
+import { AlertCircle, ChevronsUpDown, Group, Plus, User } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import toast from "react-hot-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Input } from "../ui/input";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert, AlertTitle } from "../ui/alert";
 
 // const routes = [
 //   {
@@ -40,6 +46,19 @@ import toast from "react-hot-toast";
 //   },
 // ];
 
+const CreateNewGroupSchema = z
+  .object({
+    name: z.string().min(1),
+    password: z.string().min(6),
+    confirmPassword: z.string().min(6),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type TCreateNewGroup = z.infer<typeof CreateNewGroupSchema>;
+
 const routes = [
   {
     name: "",
@@ -55,6 +74,9 @@ const DashboardLayout = () => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { register, handleSubmit, formState } = useForm<TCreateNewGroup>({
+    resolver: zodResolver(CreateNewGroupSchema),
+  });
 
   if (!token) {
     navigate("/login");
@@ -101,6 +123,30 @@ const DashboardLayout = () => {
       });
   };
 
+  const createNewGroup = (data: TCreateNewGroup) => {
+    baseApi
+      .post(
+        "/groups",
+        {
+          name: data.name,
+          password: data.password,
+        },
+        {
+          headers: {
+            "X-Auth-Token": token,
+          },
+        }
+      )
+      .then((res) => {
+        toast.success(res.data.message);
+        navigate(`/dashboard/groups/${res.data.group._id}`);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Something went wrong");
+      });
+  };
+
   if (loading) {
     return <>loading...</>;
   }
@@ -131,9 +177,65 @@ const DashboardLayout = () => {
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent className="flex flex-col gap-2">
-                <Button className="w-full">
-                  <Plus /> Create group
-                </Button>
+                <Popover>
+                  <PopoverTrigger>
+                    <Button className="w-full">
+                      <Plus /> Create group
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <form
+                      className="flex flex-col gap-3"
+                      onSubmit={handleSubmit(createNewGroup)}
+                    >
+                      <Input placeholder="Name" {...register("name")} />
+                      {formState.errors?.name && (
+                        <Alert
+                          variant="destructive"
+                          title={formState.errors?.name.message}
+                        >
+                          <AlertCircle />
+                          <AlertTitle>
+                            {formState.errors?.name.message}
+                          </AlertTitle>
+                        </Alert>
+                      )}
+                      <Input
+                        placeholder="Passoword"
+                        type="password"
+                        {...register("password")}
+                      />
+                      {formState.errors?.password && (
+                        <Alert
+                          variant="destructive"
+                          title={formState.errors?.password.message}
+                        >
+                          <AlertCircle />
+                          <AlertTitle>
+                            {formState.errors?.password.message}
+                          </AlertTitle>
+                        </Alert>
+                      )}
+                      <Input
+                        placeholder="Confirm passoword"
+                        type="password"
+                        {...register("confirmPassword")}
+                      />
+                      {formState.errors?.confirmPassword && (
+                        <Alert
+                          variant="destructive"
+                          title={formState.errors?.confirmPassword.message}
+                        >
+                          <AlertCircle />
+                          <AlertTitle>
+                            {formState.errors?.confirmPassword.message}
+                          </AlertTitle>
+                        </Alert>
+                      )}
+                      <Button className="w-full">Create new group</Button>
+                    </form>
+                  </PopoverContent>
+                </Popover>
 
                 {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any

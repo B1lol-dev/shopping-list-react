@@ -9,15 +9,28 @@ import {
 import { useAuthStore } from "@/store/auth.store";
 import { DoorOpen, MoreHorizontal, Trash, UserPlus2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GroupItems from "./components/GroupItems";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import GroupUsers from "./components/GroupUsers";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import toast from "react-hot-toast";
 
 const Group = () => {
   const { id } = useParams();
   const { token } = useAuthStore();
+  const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [group, setGroup] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(true);
@@ -60,6 +73,24 @@ const Group = () => {
       .finally(() => setLoading(false));
   }, [token, id]);
 
+  const handleDeleteGroup = () => {
+    baseApi
+      .delete(`/groups/${id}`, {
+        headers: {
+          "X-Auth-Token": token,
+        },
+      })
+      .then((res) => {
+        toast.success(res.data.message);
+        navigate("/dashboard");
+        location.reload();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Something went wrong");
+      });
+  };
+
   if (loading) {
     return <section>Loading...</section>;
   }
@@ -90,9 +121,31 @@ const Group = () => {
                     <DoorOpen /> Leave group
                   </Button>
                 ) : (
-                  <Button className="w-full" variant="destructive">
-                    <Trash /> Delete group
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger>
+                      <Button className="w-full" variant="destructive">
+                        <Trash /> Delete group
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete this group and remove group's data from our
+                          servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteGroup}>
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 )}
               </PopoverContent>
             </Popover>
