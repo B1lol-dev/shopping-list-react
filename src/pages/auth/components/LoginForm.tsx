@@ -3,23 +3,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
-import { useState, type FormEvent } from "react";
 import { baseApi } from "@/api/api";
 import { useAuthStore } from "@/store/auth.store";
 import toast from "react-hot-toast";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+
+const LoginSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(6),
+});
+
+type TLogin = z.infer<typeof LoginSchema>;
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const { register, handleSubmit, formState } = useForm<TLogin>({
+    resolver: zodResolver(LoginSchema),
+  });
 
   const { setToken } = useAuthStore();
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-
+  const onLogin = ({ username, password }: TLogin) => {
     baseApi
       .post("/auth", {
         username,
@@ -27,6 +37,10 @@ export function LoginForm({
       })
       .then((res) => {
         setToken(res.data.token);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err.response.data.message || err.message);
       });
   };
 
@@ -34,7 +48,7 @@ export function LoginForm({
     <form
       className={cn("flex flex-col gap-6", className)}
       {...props}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onLogin)}
     >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
@@ -45,13 +59,17 @@ export function LoginForm({
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="username">Username</Label>
+          {formState.errors?.username && (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>{formState.errors?.username.message}</AlertTitle>
+            </Alert>
+          )}
           <Input
             id="username"
             type="text"
             placeholder="username"
-            required
-            onChange={(e) => setUsername(e.target.value)}
-            value={username}
+            {...register("username")}
           />
         </div>
         <div className="grid gap-3">
@@ -68,12 +86,17 @@ export function LoginForm({
               Forgot your password?
             </Link>
           </div>
+          {formState.errors?.password && (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>{formState.errors?.password.message}</AlertTitle>
+            </Alert>
+          )}
           <Input
             id="password"
             type="password"
-            required
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
+            placeholder="password"
+            {...register("password")}
           />
         </div>
         <Button type="submit" className="w-full">

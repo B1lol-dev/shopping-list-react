@@ -3,32 +3,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, type FormEvent } from "react";
 import toast from "react-hot-toast";
 import { baseApi } from "@/api/api";
 import { useAuthStore } from "@/store/auth.store";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+
+const SignUpSchema = z
+  .object({
+    name: z.string().min(1).max(30),
+    username: z.string().min(1).max(30),
+    password: z.string().min(6),
+    confirmPassword: z.string().min(6),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords does not match",
+    path: ["confirmPassword"],
+  });
+
+type TSignUp = z.infer<typeof SignUpSchema>;
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const [name, setName] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confPassword, setConfPassword] = useState<string>("");
+  const { register, handleSubmit, formState } = useForm<TSignUp>({
+    resolver: zodResolver(SignUpSchema),
+  });
   const { setToken } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-
-    if (password !== confPassword) {
-      toast.error("Passwords should be identical!");
-      return null;
-    }
-
-    // baseApi.get(`/users?q=${username}`).then((res) => {
-    // if (!res.data) {
+  const onSignUp = ({ name, username, password }: TSignUp) => {
     baseApi
       .post("/users", {
         name,
@@ -40,18 +48,13 @@ export function SignupForm({
         setToken(res.data.token);
         navigate("/dashboard");
       });
-    // } else {
-    // toast.error("Username is not avialible");
-    // return;
-    // }
-    // });
   };
 
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
       {...props}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSignUp)}
     >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Sign up</h1>
@@ -62,48 +65,62 @@ export function SignupForm({
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="name">Name</Label>
+          {formState.errors?.name && (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>{formState.errors?.name.message}</AlertTitle>
+            </Alert>
+          )}
           <Input
             id="name"
             type="text"
             placeholder="Gadoy"
-            required
-            onChange={(e) => setName(e.target.value)}
-            value={name}
+            {...register("name")}
           />
         </div>
         <div className="grid gap-3">
           <Label htmlFor="username">Username</Label>
+          {formState.errors?.username && (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>{formState.errors?.username.message}</AlertTitle>
+            </Alert>
+          )}
           <Input
             id="username"
             type="text"
             placeholder="gadoy123"
-            required
-            onChange={(e) => setUsername(e.target.value)}
-            value={username}
+            {...register("username")}
           />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
           </div>
-          <Input
-            id="password"
-            type="password"
-            required
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-          />
+          {formState.errors?.password && (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>{formState.errors?.password.message}</AlertTitle>
+            </Alert>
+          )}
+          <Input id="password" type="password" {...register("password")} />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="conf_password">Confirm Password</Label>
           </div>
+          {formState.errors?.confirmPassword && (
+            <Alert variant="destructive">
+              <AlertCircle />
+              <AlertTitle>
+                {formState.errors?.confirmPassword.message}
+              </AlertTitle>
+            </Alert>
+          )}
           <Input
             id="conf_password"
             type="password"
-            required
-            onChange={(e) => setConfPassword(e.target.value)}
-            value={confPassword}
+            {...register("confirmPassword")}
           />
         </div>
         <Button type="submit" className="w-full">
