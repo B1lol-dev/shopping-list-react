@@ -57,7 +57,11 @@ const Dashboard = () => {
 
   const handleDeleteAccount = () => {
     baseApi
-      .delete(`/users/${user?._id}`)
+      .delete(`/users`, {
+        headers: {
+          "X-Auth-Token": token,
+        },
+      })
       .then(() => {
         toast.success("Account deleted successfully");
         removeToken();
