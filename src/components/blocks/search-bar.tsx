@@ -86,7 +86,7 @@ const SearchComponent = ({ data, onChange }: SearchComponentProps) => {
   return (
     <div className="w-full flex flex-col items-center justify-center space-y-4 fixed left-1/2 top-1/2 -translate-1/2 z-10">
       {/* Search Input and Sort Dropdown */}
-      <div className="w-full md:w-[40%] max-w-lg flex flex-col sm:flex-row gap-4 bg-white">
+      <div className="w-full md:w-[40%] max-w-lg flex flex-col sm:flex-row gap-4 bg-background">
         {/* Search Bar with Icon */}
         <div className="relative flex-1">
           <Input
@@ -135,7 +135,7 @@ const SearchComponent = ({ data, onChange }: SearchComponentProps) => {
       </div>
 
       {/* Search Results with Scroll */}
-      <ScrollArea className="h-72 w-full md:w-[40%] max-w-lg border rounded-md bg-white">
+      <ScrollArea className="h-72 w-full md:w-[40%] max-w-lg border rounded-md bg-background">
         <div className="p-4 space-y-4">
           {filteredData.length > 0 ? (
             filteredData.map((item) => (
