@@ -50,8 +50,6 @@ const Dashboard = () => {
       .finally(() => setLoading(false));
   }, [token, navigate, removeToken]);
 
-  console.log(user);
-
   const handleCopyUsername = () => {
     copyToClipboard(user?.username);
     toast.success(`${user?.username} copied to clipboard`);
@@ -60,8 +58,7 @@ const Dashboard = () => {
   const handleDeleteAccount = () => {
     baseApi
       .delete(`/users/${user?._id}`)
-      .then((res) => {
-        console.log(res.data);
+      .then(() => {
         toast.success("Account deleted successfully");
         removeToken();
       })

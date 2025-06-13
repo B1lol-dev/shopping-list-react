@@ -98,8 +98,7 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
           "X-Auth-Token": token,
         },
       })
-      .then((res) => {
-        console.log(res.data);
+      .then(() => {
         setItems((prev) => prev.filter((item) => item._id !== id));
         toast.success("Item deleted successfully");
       })
@@ -120,13 +119,12 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
           },
         }
       )
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         toast.success("Marked as bought");
       })
       .catch((err) => {
         toast.error("Something went wrong");
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -137,13 +135,12 @@ const GroupItems = ({ items, groupId, setItems }: IGroupItemsProps) => {
           "X-Auth-Token": token,
         },
       })
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         toast.success("Unmarked as bought");
       })
       .catch((err) => {
         toast.error("Something went wrong");
-        console.log(err);
+        console.error(err);
       });
   };
 

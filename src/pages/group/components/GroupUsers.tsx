@@ -55,7 +55,7 @@ const GroupUsers = ({ users, setUsers, group }: IGroupUsersProps) => {
         setMe(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }, [token]);
 
@@ -66,13 +66,11 @@ const GroupUsers = ({ users, setUsers, group }: IGroupUsersProps) => {
           "X-Auth-Token": token,
         },
       })
-      .then((res) => {
-        console.log(res.data);
+      .then(() => {
         setUsers((prev) => prev.filter((user) => user._id !== id));
         toast.success("User deleted from group");
       });
   };
-  console.log(users);
 
   return (
     <div>

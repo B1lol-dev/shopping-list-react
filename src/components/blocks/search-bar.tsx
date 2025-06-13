@@ -77,7 +77,6 @@ const SearchComponent = ({ data, onChange }: SearchComponentProps) => {
         }
       )
       .then((res) => {
-        console.log(res);
         toast.success(res.data.message);
         setIsOpen(false);
         navigate(`/dashboard/group/${res.data.group._id}`);

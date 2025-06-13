@@ -108,7 +108,6 @@ const DashboardLayout = () => {
         },
       })
       .then((res) => {
-        console.log(res.data);
         setData(
           res.data.map(
             (item: { name: string; _id: string; owner: { name: string } }) => ({
@@ -142,7 +141,7 @@ const DashboardLayout = () => {
         navigate(`/dashboard/group/${res.data.group._id}`);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         toast.error("Something went wrong");
       });
   };
