@@ -74,9 +74,13 @@ const DashboardLayout = () => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { register, handleSubmit, formState } = useForm<TCreateNewGroup>({
-    resolver: zodResolver(CreateNewGroupSchema),
-  });
+  const { register, handleSubmit, formState, reset } = useForm<TCreateNewGroup>(
+    {
+      resolver: zodResolver(CreateNewGroupSchema),
+    }
+  );
+  const [refetchCount, setRefetchCount] = useState<number>(0);
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   if (!token) {
     navigate("/login");
@@ -98,7 +102,7 @@ const DashboardLayout = () => {
         setIsSearchShow(false);
       }
     });
-  }, [token]);
+  }, [token, refetchCount]);
 
   const handleSearch = (searchQ: string) => {
     baseApi
@@ -138,6 +142,9 @@ const DashboardLayout = () => {
       )
       .then((res) => {
         toast.success(res.data.message);
+        setShowCreateModal(false);
+        setRefetchCount((p) => p + 1);
+        reset();
         navigate(`/dashboard/group/${res.data.group._id}`);
       })
       .catch((err) => {
@@ -176,7 +183,10 @@ const DashboardLayout = () => {
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent className="flex flex-col gap-2">
-                <Popover>
+                <Popover
+                  onOpenChange={setShowCreateModal}
+                  open={showCreateModal}
+                >
                   <PopoverTrigger>
                     <Button className="w-full">
                       <Plus /> Create group
